@@ -65,7 +65,7 @@ Testons maintenant l'intégration.
 * Une fois activée, passer la souris sur l'icône du lien pour voir l'URL SFTP et copier le lien
 ![integration](../images/lab1-integration-activation.png)
 * Télécharger le fichier leads.csv [**ici**](../assets/leads.csv)
-* Lancez un client FTP (par exemple FileZilla) et créez une connexion SFTP au serveur SFTP en utilisant l'URL que vous venez de copier et les informations d'identification de la connexion et connectez-vous au serveur SFTP (si vous utilisez FileZilla, collez simplement l'URL SFTP dans le premier champ et cliquez sur connexion rapide. Assurez-vous de préfixer l'hôte par `sftp://` puis entrez le mot de passe). Sélectionnez le dossier `/incoming` pour le téléchargergement (c'est ce qui déclenchera votre intégration).
+* Lancez un client FTP (par exemple FileZilla) et créez une connexion SFTP au serveur SFTP en utilisant l'URL que vous venez de copier et les informations d'identification de la connexion et connectez-vous au serveur SFTP (si vous utilisez FileZilla, collez simplement l'URL SFTP dans le premier champ et cliquez sur connexion rapide. Assurez-vous de préfixer l'hôte par `sftp://` puis entrez le mot de passe). Sélectionnez le dossier `/incoming` pour le téléchargement (c'est ce qui déclenchera votre intégration).
   ![filezilla connection](../images/lab1-filezilla-connection.png)
 * Uploader leads.csv dans le dossier distant `/incoming` ce qui déclenchera votre intégration
 * Aller sur le Monitor

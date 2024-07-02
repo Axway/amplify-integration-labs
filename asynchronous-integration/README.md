@@ -56,14 +56,14 @@ In this lab, we'll create the first flow that will poll Zoho Invoice for updated
 * Click on the Event button and select the Scheduler Component and configure for 60 seconds
   ![scheduler](images/lab1-scheduler.png)
 * Click Test to run the integration. This will initialize the Last Run time stamp, `LastRunDt-...`. This built in variable will always contain the timestamp of the last time the integration ran. We can use it for polling modifications in back end data sources.
-* In order to query Zoho Invoice for updated invoices, we'll use the built in Last Run time stamp, `LastRunDt-...` to compare with the invoice *last_modified_time* times tamp, but we need to convert it to the Zoho Invoice Timestamp format using a Map function. Click on plus button and add a Map component and expand the bottom panel and add a DateFormat function
+* In order to query Zoho Invoice for updated invoices, we'll use the built in Last Run time stamp, `LastRunDt-...` to compare with the invoice *last_modified_time* times tamp, but we need to convert it to the Zoho Invoice Timestamp format using a Map function. Click on `+` button and add a Map component and expand the bottom panel and add a DateFormat function
   * On the right hand panel, right click on a variable and add a String variable called *LastRunDt-formatted*
   * Drag a line from `LastRunDt-...` variable on the left hand side to the DateFormat function `sourceDate`
   * Right click on the DateFormat `sourceDateFormat` and set to `yyyy-MM-dd HH:mm:ss SSS`
-  * Right click on the DateFormat targetDateFormat and set to `yyyy-MM-dd'T'HH:mm:ssZ`
+  * Right click on the DateFormat `targetDateFormat` and set to `yyyy-MM-dd'T'HH:mm:ssZ`
   * Drag a line from DateFormat function `output` to the String variable you created above (e.g. *LastRunDt-formatted*) and click Save
   ![map](images/lab1-map.png)
-* Now, we need to query Zoho Invoice for modified invoices. So, click the plus button to add an OpenAPI Client Invoke Operation component and expand the bottom panel. Click the Add button next to Connection so that we can create an OpenAPI Connection to your Zoho Invoice application and enter a name (e.g. Zoho API) and description.
+* Now, we need to query Zoho Invoice for modified invoices. So, click the `+` button to add an OpenAPI Client Invoke Operation component and expand the bottom panel. Click the Add button next to Connection so that we can create an OpenAPI Connection to your Zoho Invoice application and enter a name (e.g. Zoho API) and description.
 * Follow the instructions [**here**](assets/zoho-api-instructions.md) and use the OAS doc [**here**](assets/Zoho-Invoice-oas3.json) to create you connection and don't forget to generate a token and test the connection
   ![openapi client connection](images/lab1-open-apiclient-connection.png)
 * Go back to the Integration and click on the OpenAPI Client Invoke Operation component and click refresh and select the connection you just created
@@ -97,7 +97,7 @@ In this lab, we'll create the first flow that will poll Zoho Invoice for updated
 * Let's test it by adding an invoice to Zoho Invoice and then pressing the Test button in your integration (no need to enable the integration)
 * A new browser tab will open showing the transaction. You should see that one invoice was detected by looking at the For-each step
   ![transaction monitoring](images/lab1-transaction-monitoring.png)
-* Click the plus sign next to For-each and again and see the Apache Publish step and click on it and expand both sides to see that your invoice was published
+* Click the `+` sign next to For-each and again and see the Apache Publish step and click on it and expand both sides to see that your invoice was published
   ![transaction monitoring details](images/lab1-transaction-monitoring-details.png)
 
 Now that we can publish an updated invoice to Kafka, let's create a Kafka Consumer integration to consume the Kafka message and send a notification to Microsoft Teams
@@ -215,7 +215,7 @@ We'll use the MS Teams Incoming Webhook Connector so that we can Post a message 
   }
   ```
 
-* Replace the variables (e.g. {...}) by deleting them and clicking the plus button and selecting the appropriate variable from there and click Save and then Save again
+* Replace the variables (e.g. {...}) by deleting them and clicking the `+` button and selecting the appropriate variable from there and click Save and then Save again
   ![https client post set value](images/lab2-https-client-post-set-value.png)
 * Now we're ready to test our integration which should look like this:
   ![integration](images/lab2-integration.png)

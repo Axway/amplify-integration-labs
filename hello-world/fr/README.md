@@ -180,7 +180,7 @@ Dans cette étape, nous allons ajouter une logique de contrôle de flux et des v
 Continuer à partir de l'étape 3
 
 * Désactiver l'intégration afin de pouvoir la modifier 
-* Cliquer sur le signe plus entre les deux composants et ajouter un If-else
+* Cliquer sur le signe `+` entre les deux composants et ajouter un If-else
   ![If-else](../images/lab4-ifelse-a.png)
 * Développer le If-else et l'étiqueter "check value"
   ![If-else](../images/lab4-ifelse-b.png)

@@ -106,7 +106,7 @@ Continue from Lab 1
   ![Create Component](images/lab2-create-http-post-component-a.png)
 * Click save on the panel
 * Click the Test button to test your flow
-* See results in webhook site and see the respurce path, Authorization Header and body
+* See results in webhook site and see the resource path, Authorization Header and body
   ![Create Component](images/lab2-test-results-a.png)
 
 Your final integration should look like this:
@@ -149,7 +149,7 @@ Continue from Lab 2
 * Copy the endpoint URL of the integration on the data plane  
   ![Enable Toggle](images/lab3-enable-c.png)
 * In a separate browser tab paste the URL and enter a value for value (e.g. 10)
-* See results in webhook site and see the body should equal the value you provided as a query parameter
+* See results in webhook site and see that the body should be equal to the value you provided as a query parameter
   ![Result](images/lab3-result-a.png)
 * Go to the Monitor and view the transaction and explore the information there that is useful for debugging
   ![Result](images/lab3-result-b.png)
@@ -167,8 +167,8 @@ In this lab, we'll add some flow control logic and variables to our integration 
 
 Continue from Lab 3
 
-* Disable to integration so it can be edited
-* Click the plus sign between the two components and add an if-else
+* Disable the integration so it can be edited
+* Click the `+` sign between the two components and add an if-else
   ![If-else](images/lab4-ifelse-a.png)
 * Expand the If-else and label it "check value"
   ![If-else](images/lab4-ifelse-b.png)

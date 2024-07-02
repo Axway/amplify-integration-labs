@@ -22,10 +22,10 @@ We will do the following:
 * Scroll down to the Redirect URLs and enter the following Redirect URL and press Save:
   `<<YOUR AIP BASE URL>>/design/oauth2/callback`
   ![hubspot04](hubspot-connection/hubspot04.png)
-* Scroll down to the Scopes section and select your desired scopes. For example, I selected all CRM scopes below:
-  ![hubspot05](hubspot-connection/hubspot05_.png)
+* Scroll down to the Scopes section and select your desired scopes. For example, I selected the contact CRM scopes below:
+  ![hubspot05](hubspot-connection/hubspot05.png)
 * We will need the list of selected scopes when we create the Amplify Integration Hubspot Connection. For my settings, they are as follows:
-`crm.schemas.companies.write crm.schemas.contacts.write crm.schemas.deals.read crm.schemas.deals.write crm.objects.owners.read crm.objects.contacts.write crm.objects.companies.write crm.lists.write crm.objects.companies.read crm.lists.read crm.objects.deals.read crm.schemas.contacts.read crm.objects.deals.write crm.objects.contacts.read crm.schemas.companies.read crm.objects.custom.read crm.schemas.custom.read`
+`crm.schemas.contacts.write crm.objects.contacts.write crm.schemas.contacts.read crm.objects.contacts.read oauth`
 
 ## Amplify Integration Hubspot Connection
 
@@ -51,7 +51,7 @@ Now your Connection can be used in an integration but first let's test it out.
 * Create an integration and add a Scheduler trigger event and set to any value since we won't be turning it on
   ![hubspot15](hubspot-connection/hubspot15.png)
   ![hubspot16](hubspot-connection/hubspot16.png)
-* Click the plus button and add a Hubspot Get All component to the integration
+* Click the `+` button and add a Hubspot Get All component to the integration
   ![hubspot17](hubspot-connection/hubspot17.png)
   ![hubspot18](hubspot-connection/hubspot18.png)
 * Expand the bottom panel and select the Hubspot Connector you created above

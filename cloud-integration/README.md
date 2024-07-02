@@ -91,7 +91,7 @@ In this lab, we'll set up a Salesforce push topic and start our integration by a
 In this lab, we'll retrieve the contact and desired fields based on the id from the new contact pushtopic. We'll use a Salesforce query component and a query Contact by id Plug.
 
 * Disable your integration to continue designing the integration
-* Click the plus icon to add a step after the trigger event 
+* Click the `+` icon to add a step after the trigger event 
 * Select a Salesforce query component and select your Salesforce Connection
   ![salesforce query component init](images/lab2-salesforce-query-component-init.png)
 * Click Add on the Plugs and name your Plug and give it a description (e.g. SFDC_Get_Contact_by_Id) and Configure it
@@ -117,7 +117,7 @@ In this lab, we'll use the retrieved contact and insert it into Hubspot. We'll u
 
 * Follow [**this guide**](assets/hubspot-connection.md) to create  Hubspot Connection
 * Disable your integration to continue designing the integration
-* Click on the plus sign to add a new step to the integration and select a Hubspot Create component 
+* Click on the `+` sign to add a new step to the integration and select a Hubspot Create component 
   ![add hubspot create component](images/lab3-add-hubspot-create-component.png)
 * Select the Hubspot connection you just created
   ![hubspot create component init](images/lab3-hubspot-create-component-init.png)
@@ -137,7 +137,7 @@ In this lab, we'll use the retrieved contact and insert it into Hubspot. We'll u
   ![hubspot create component](images/lab3-hubspot-create-component.png)
 * Expand the ACTION PROPERTIES -> `HubspotCreateContactInput->create` to expose the Hubspot contact fields
   ![hubspot create component properties](images/lab3-hubspot-create-component-properties.png)
-* In the left panel, expand `SFDC_Get_Contact_by_IdOutput/response/records[]` so you can see the Salesforce contact fields and connector each one to the corresponding Hubspot contact fields and click Save
+* In the left panel, expand `SFDC_Get_Contact_by_IdOutput/response/records[]` so you can see the Salesforce contact fields and connect each one to the corresponding Hubspot contact fields and click Save
   ![hubspot create component input](images/lab3-hubspot-create-component-input.png)
 * Enable your integration and create a new Salesforce contact and see the new contact in Hubspot
   ![salesforce contact creation](images/lab3-salesforce-contact-creation.png)
@@ -164,7 +164,14 @@ We'll use the MS Teams Incoming Webhook Connector so that we can Post a message 
   ![https client post component](images/lab4-https-client-post-component.png)
 * In the ACTION PROPERTIES section, expand `HTTPSPostInput` to expose the body and right click on body and select SetValue
   ![https client post component setvalue](images/lab4-https-client-post-component-setvalue.png)
-* Follow the screen shots below to type the POST body and press the + button to select Name and Email from `SFDCContactPushOutput` and press Save
+* Copy the JSON text, and insert Name and Email as shown by positioning your cursor in the text and by pressing the + button to select "Name" and "Email" from `SFDCContactPushOutput`, then press "Save
+
+  ```json
+  {
+    Text: "Newly created Salesforce contact: () copied to Hubspot"
+  ‌}
+  ```
+
   ![https client post component setvalue variable1](images/lab4-https-client-post-component-setvalue-variable1.png)
   ![https client post component setvalue variable2](images/lab4-https-client-post-component-setvalue-variable2.png)
   ![https client post component setvalue text](images/lab4-https-client-post-component-setvalue-text.png)

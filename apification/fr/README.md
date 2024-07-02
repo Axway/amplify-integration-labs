@@ -159,10 +159,11 @@ Dans cette étape, nous allons créer notre intégration et définir un endpoint
   * Sélectionner HTTPS comme protocole et laisser None pour l'Authentication pour le moment puis cliquer sur Update
   ![HTTPS server connection](../images/lab2-https-server-connection.png)
   * Fermer l'onglet de la connexion et retourner au composant HTTP/S Server de l'intégration, rafraîchir la liste de connexion puis sélectionner la connexion tout juste créée
-  * Entrer `invoices` pour le resource path (chemin d'accès à la ressource) et entrer deux Query Parameters: `status` et  `currencycode` puis apuyer sur Save. Le resource path doit être unique. Étant donné que vous travaillez probablement dans un environnement partagé, vous pouvez préfixer le ressource path avec vos initiales pour le rendre unique (par exemple, lb_invoices) \
+  * Entrer `invoices` pour le resource path (chemin d'accès à la ressource) et entrer deux Query Parameters: `status` et  `currencycode` puis apuyer sur Save. 
+    > À noter que le resource path doit être unique. Étant donné que vous travaillez probablement dans un environnement partagé, vous pouvez préfixer le ressource path avec vos initiales pour le rendre unique (par exemple, lb_invoices) \
   ![HTTPS Server component](../images/lab2-https-server-component.png) 
     > À noter que nous avons toujours besoin de connecter la réponse au composant HTTP/S Server mais nous ferons cela juste après avoir défini la variable réponse
-* Cliquer sur le bouton plus pour ajouter un composant Database Select puis agrandir le panneau inférieur
+* Cliquer sur le bouton `+` pour ajouter un composant Database Select puis agrandir le panneau inférieur
   * Nous devons créer une connexion Database pour notre Database Postgres. Pour cela cliquer sur Add à côté du sélecteur de connexion et donner à la connexion un nom et une description (par ex: Neon Postgres DB)
     * Sélectionner PostgreSQL comme Database Type et choisir la version utilisée lors de la création de votre DatabaseSelect (la version par défaut est 15.x)
     * Mettre à jour l'URL de connexion jdbc:postgresql://_`server`_/_`databaseName`_ avec `host` et `database name` que vous avez noté à l'étape précèdente après la création de la database (le port PostgreSQL par défaut 5432 n'est pas requis dans l'URL)
@@ -228,17 +229,19 @@ L'intégration doit ressembler à ceci: \
 
 * Activer l'intégration et faire un appel API depuis un navigateur, Postman ou curl comme suit:
 
+   > Passer la souris sur l'icône du lien pour voir l'URL nécessaire à l'appel API et copier le lien.
+  
+  ![alt text](/apification/images/image.png)
+  
+  > Veiller à mettre à jour le chemin de ressource "/invoices" pour qu'il corresponde à ce qui a été défini. Par exemple, dans notre cas d'utilisation, le statut est "Overdue" et le code de la devise est "EUR". Le chemin de la ressource doit donc être "/invoices?status=Overdue&currencycode=EUR".
+
+  > Effectuez un appel l'API depuis votre navigateur, Postman ou curl avec la commande suivante:   
+  
   ```bash
-  curl --location --request GET "https://<dataplane-hostname>:9443/invoices?status=Overdue&currencycode=EUR"
+  curl --location --request GET "<YOUR URL>"
   ```
-
-  > Note: Le _dataplane hostname_ du mode Design (dans le déploiement SaaS) est:\
-  > _**tenant-name**-design.prod.integration.**region**.axway.com_\
-  > où _tenant-name_ et _region_ peuvent être trouvés dans le control plane URL que vous utilisez 
-
-  > Conseil: Assurez vous de mettre à jour le ressource path "/invoices" pour que cela corresponde à ce qui a été défini 
-
-  > Note: La réponse sera vide pour le moment, il faudra donc ignorer le message d'erreur "empty response" de votre navigateur ou client
+  
+  > Note : La réponse sera vide pour l'instant, ignorez donc le message d'erreur "empty response" de votre navigateur ou client
 
 * Consulter la transaction dans le Monitor et cliquer sur l'étape Database Select puis dérouler `GetInvoicesByStatusOutput->resultSet`. Les factures ont bien été récupérées
 ![transaction monitoring](../images/lab2-transaction-monitoring_.png)
@@ -248,7 +251,7 @@ L'intégration doit ressembler à ceci: \
 Dans cette étape, nous allons parcourir les factures, parser chacune d'entre elles dans un format JSON et effectuer une conversion du montant de la facture dans la devise souhaitée, qui sera transmise à l'appel API sous la forme d'un paramètre de requête
 
 * Désactiver l'intégration
-* Cliquer sur le bouton plus et ajouter un composant For-each, l'agrandir et cliquer sur Config
+* Cliquer sur le bouton `+` et ajouter un composant For-each, l'agrandir et cliquer sur Config
 * Sélectionner `GetInvoicesByStatusOutput->response->resultSet` en déroulant GetInvoicesByStatusOutput puis response, afin de boucler sur chaque élément du resultSet. Cliquer sur Save
 ![foreach configuration](../images/lab3-foreach-configuration_.png)
 * Convertissons le montant total des factures dans la devises désirée en utilisant l'API de conversion de devises APILayer 
@@ -303,7 +306,7 @@ Dans cette étape, nous allons parcourir les factures, parser chacune d'entre el
 
 * Retrouver l'intégration dans le Monitor et cliquer dessus. Un numéro doit apparaître dans le For-each indiquant le nombre de factures
 ![transaction monitoring](../images/lab3-transaction-monitoring.png)
-* Cliquer sur le signe plus à côté du composant For-each puis cliquer sur une des itérations
+* Cliquer sur le signe `+` à côté du composant For-each puis cliquer sur une des itérations
 * Cliquer sur HTTP/S Client Get puis dérouler la variable HTTPSGetOutput pour voir la réponse API de la conversion de devise
 ![transaction monitoring response details](../images/lab3-transaction-monitoring-response-details.png)
 
@@ -357,9 +360,9 @@ Dans cette étape, nous allons mettre en correspondance (mapping) notre facture 
     ![map2](../images/lab4-map2-AppendList.png)
   * Ajouter une fonction AddFloats
     * Tirer une ligne de `response->grandTotal` à `num1`
-    * Tirer une ligne de `InvoiceResponse->totalamnt` à `num2`
+    * Tirer une ligne de `InvoiceResponse->totalamt` à `num2`
     * Tirer une ligne de `output` à `response->grandTotal`
-    ![map2](../images/lab4-map2-AddFloats.png)
+    ![map2](../images/lab4-map2-addfloats.png)
   * Compléter le champ de réponse
     * Tirer une ligne de `HTTPSServerGetOutput->queryParams->currencycode` sur la gauche, vers `response->currency` sur la droite
     * Tirer une ligne de `HTTPSServerGetOutput->queryParams->status` sur la gauche, vers  `response->status` sur la droite
@@ -370,10 +373,18 @@ Dans cette étape, nous allons mettre en correspondance (mapping) notre facture 
 L'intégration doit ressembler à ceci:
 ![integration](../images/lab4-integration.png)
 
-* Activer l'intégration en faisant un appel API depuis un navigateur, Postman ou depuis Curl comme suit:
+* Activer l'intégration en faisant un appel API depuis un navigateur, Postman ou depuis Curl avec le même URL que précédemment comme suit:
+  
+  > Passer la souris sur l'icône du lien pour voir l'URL nécessaire à l'appel API et copier le lien.
+  
+  ![alt text](/apification/images/image.png)
+  
+  > Veiller à mettre à jour le chemin de ressource "/invoices" pour qu'il corresponde à ce qui a été défini. Par exemple, dans notre cas d'utilisation, le statut est "Overdue" et le code de la devise est "EUR". Le chemin de la ressource doit donc être "/invoices?status=Overdue&currencycode=EUR".
 
+  > Effectuez un appel l'API depuis votre navigateur, Postman ou curl avec la commande suivante:   
+  
   ```bash
-  curl --location --request GET 'https://<dataplane-hostname>:9443/invoices?status=Overdue&currencycode=EUR'
+  curl --location --request GET "<YOUR URL>"
   ```
 
 Le résultat devrait ressembler à:

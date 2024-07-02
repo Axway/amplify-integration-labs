@@ -161,10 +161,11 @@ In this lab, we'll create our integration and define the REST API endpoint using
   * Select HTTPS for the Protocol and leave Authentication to None for now and click on Update \
   ![HTTPS server connection](images/lab2-https-server-connection.png)
   * Close the connection sub tab and go back to the HTTP/S Server component in the integration, refresh the connection list and select the connection you have just created.
-  * Enter `invoices` for the resource path and enter two Query Parameters: `status` and `currencycode` and press Save. The resource path must be unique for your tenant. Since you are most likely working in a shared environment, you may want to prefix the resource path with your initials to make it unique (e.g. lb_invoices) \
+  * Enter `invoices` for the resource path and enter two Query Parameters: `status` and `currencycode` and press Save. 
+    > Note that the resource path must be unique for your tenant. Since you are most likely working in a shared environment, you may want to prefix the resource path with your initials to make it unique (e.g. lb_invoices) \
   ![HTTPS Server component](images/lab2-https-server-component.png) 
     > Note that we still need to connect the response to the HTTP/S Server component but we'll do that shortly after we've defined the response variable
-* Click the plus button to add a Database Select component and expand the bottom panel
+* Click the `+` button to add a Database Select component and expand the bottom panel
   * We need to create a database connection for our Postgres database so click Add next to the Connection picker and give your connection a name and description (e.g. Neon Postgres DB)
     * Select PostgreSQL as Database Type and set the version you used for the database creation (default is 15.x)
     * Update the connection URL with jdbc:postgresql://_`server`_/_`databaseName`_ with `host` and `database name` that you wrote down after database creation (default postgresql port 5432 is not required in the URL)
@@ -172,7 +173,7 @@ In this lab, we'll create our integration and define the REST API endpoint using
     * click on Update and then on Test \
     ![database connection](images/lab2-database-connection.png)
       > Note that if you get any Connection Timeout errors with the connection then you may want to expand the Advanced section and set `Connection Wait Timeout` to 1000. Don't forget to click update.
-    * Close your connection sub tab and return the the Database Select component in your integration
+    * Close your connection sub tab and return to the Database Select component in your integration
   * Click refresh in the Connections tab and select the database connection you just created
   * We need a plug for selecting invoices by Status so click Add next to the Plug picker and give your plug a name and description (e.g. GetInvoicesByStatus) and click on the Configure button
     * Select the database connector you just created and select `Select` for the Actions and `public` for the schemas
@@ -229,17 +230,19 @@ Your integration should look like this: \
 ![integration](images/lab2-integration.png)
 
 * Enable your integration and make an API call from your Browser, Postman or curl as follows:
+  
+  > Mouse over the link icon to see the URL you need for the API call and copy the link
+  
+  ![alt text](images/image.png)
+  
+  > Make sure to update the resource path "/invoices" to match what you defined. For example in our use case the status is 'Overdue' and the currency code is 'EUR', so your ressource path should be "/invoices?status=Overdue&currencycode=EUR"
 
+  > Make an API call from your Browser, Postman or curl with the following command:   
+  
   ```bash
-  curl --location --request GET "https://<dataplane-hostname>:9443/invoices?status=Overdue&currencycode=EUR"
+  curl --location --request GET "<YOUR URL>"
   ```
-
-  > Note: The _dataplane hostname_ of the Design mode (in SaaS deployment) is:\
-  > _**tenant-name**-design.prod.integration.**region**.axway.com_\
-  > where _tenant-name_ and _region_ can be found in the current control plane URL that you are using so far.
-
-  > Tip: Make sure to update the resource path "/invoices" to match what you defined.
-
+  
   > Note: The response would be empty for now, so ignore "empty response" error message from your browser or client.
 
 * Find your transaction in the Monitor and click on the Database Select step and expand `GetInvoicesByStatusOutput->resultSet` and see that you are retrieving invoices
@@ -250,7 +253,7 @@ Your integration should look like this: \
 In this lab, we'll loop over the invoices, parse each one to a JSON object and do a currency conversion on the invoice amount to a desired currency passed into the API call as a query parameter.
 
 * Disable your integration
-* Click the plus button and add a For-each component, expand it and click on Config
+* Click the `+` button and add a For-each component, expand it and click on Config
 * Click the down arrow and select the `GetInvoicesByStatusOutput->response->resultSet` array to loop over and click Save
 ![foreach configuration](images/lab3-foreach-configuration_.png)
 * Let's convert the invoice total amount to the desired currency using the APILayer currency conversion API. 
@@ -306,7 +309,7 @@ In this lab, we'll loop over the invoices, parse each one to a JSON object and d
 
 * Find your transaction in the Monitor and click on it. You should see the For-each with some number inside indicating the number of invoices
 ![transaction monitoring](images/lab3-transaction-monitoring.png)
-* Click the plus sign next to the For-each and again on one of the iterations
+* Click the `+` sign next to the For-each and again on one of the iterations
 * Click on the HTTP/S Client Get and then expand the HTTPSGetOutput to see the currency conversion API response
 ![transaction monitoring response details](images/lab3-transaction-monitoring-response-details.png)
 
@@ -335,7 +338,7 @@ In this lab, we'll map our invoice and currency converted amount to the response
   * Right click on any variable on the right hand panel and select Paste and name the variable `invoiceResponse`
   * Click on it expand this variable
   * Expand `currencyConvertResponse` in the left hand panel
-    * Add a map function using the '+fx' button, select DecimalPrecision is the Math category.
+    * Add a map function using the '+fx' button, select DecimalPrecision in the Math category.
       * Drag a line from `currencyConvertResponse->result` to `decimal`
       * Set `precision` to 2
       * Drag a line from `output` to `invoiceResponse->totalamt`
@@ -360,9 +363,9 @@ In this lab, we'll map our invoice and currency converted amount to the response
     ![map2](images/lab4-map2-AppendList.png)
   * Add an AddFloats function
     * Drag a line from `response->grandTotal` to `num1`
-    * Drag a line from `currencyConvertResponse->result` to `num2`
+    * Drag a line from `invoiceResponse->totalamt` to `num2`
     * Drag a line from `output` to `response->grandTotal`
-    ![map2](images/lab4-map2-AddFloats.png)
+    ![map2](images/lab4-map2-addfloats.png)
   * Complete the response fields
     * Drag a line from `HTTPSServerGetOutput->queryParams->currencycode` on the left to `response->currency` on the right
     * Drag a line from `HTTPSServerGetOutput->queryParams->status` on the left to `response->status` on the right
@@ -373,10 +376,17 @@ In this lab, we'll map our invoice and currency converted amount to the response
 Your integration is complete and should look like this:
 ![integration](images/lab4-integration.png)
 
-* Enable your integration and make an API call from the Browser, Postman or curl as follows:
+* Enable your integration and make an API call from the Browser, Postman or curl with the same URL you used before as follows:
+> Mouse over the link icon to see the URL you need for the API call and copy the link
+  
+  ![alt text](images/image.png)
+  
+  > Make sure to update the resource path "/invoices" to match what you defined. For example in our use case the status is 'Overdue' and the currency code is 'EUR', so your ressource path should be "/invoices?status=Overdue&currencycode=EUR"
 
+  > Make an API call from your Browser, Postman or curl with the following command:   
+  
   ```bash
-  curl --location --request GET 'https://<dataplane-hostname>:9443/invoices?status=Overdue&currencycode=EUR'
+  curl --location --request GET "<YOUR URL>"
   ```
 
 Your result should look similar to the following:
