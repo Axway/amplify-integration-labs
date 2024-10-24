@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In these labs, we'll create a set of integrations that will enable us to discover new and modified invoices and send notifications to stakeholders via MS Teams. The data will pass through Kafka.
+In these labs, we'll create a set of integrations that will enable us to discover new and modified invoices and send notifications to stakeholders via MS Teams. The data will pass through RabbitMQ.
 
 A demo is shown below:
 
@@ -10,23 +10,23 @@ A demo is shown below:
 
 The flows are described below:
 
-* Kafka Publisher
+* RabbitMQ Publisher
   * Poll Zoho Invoice for new and modified invoices
-  * Loop over the invoices and publish to Kafka
-* Kafka Consumer
-  * Consume Kafka message
+  * Loop over the invoices and publish to RabbitMQ
+* RabbitMQ Consumer
+  * Consume RabbitMQ message
   * Parse message
-  * Send Notification to MS Teams
+  * Send Notification to MS Teams channel
 
 This entire data flow is illustrated below:
 
-![flow](images/intro-flow.png)
+![flow](images/intro-flow.jpg)
 
 In this set of labs, you will learn the following:
 
-* How to create a Kafka Connection
-* How to publish to a Kafka Topic
-* How to consume a Kafka topic
+* How to create a RabbitMQ Connection
+* How to publish to in a RabbitMQ queue
+* How to consume from a RabbitMQ queue
 * How to create a Zoho Invoice OpenAPI Connection
 * How to use the Zoho Invoice OpenAPI Component to query Zoho Invoice for new and modified records
 * How to create an HTTP/S Client Connection to integrate with MS Teams
@@ -34,23 +34,23 @@ In this set of labs, you will learn the following:
 
 The final integrations are shown below:
 
-* Kafka Publisher
-![integration1](images/intro-integration1.png)
-* Kafka Consumer
-![integration2](images/intro-integration2.png)
+* RabbitMQ Publisher
+![integration1](images/intro-integration1.jpg)
+* RabbitMQ Consumer
+![integration2](images/intro-integration2.jpg)
 
 ## Prerequisites
 
 * Access to Amplify Integration
   > If you do not have an account and need one, please send an email to **[amplify-integration-training@axway.com](mailto:amplify-integration-training@axway.com?subject=Amplify%20Integration%20-%20Training%20Environment%20Access%20Request&body=Hi%2C%0D%0A%0D%0ACould%20you%20provide%20me%20with%20access%20to%20an%20environment%20where%20I%20can%20practice%20the%20Amplify%20Integration%20e-Learning%20labs%20%3F%0D%0A%0D%0ABest%20Regards.%0D%0A)** with the subject line `Amplify Integration Training Environment Access Request`
 * A free [**Zoho Invoice**](https://www.zoho.com/invoice/) account
-* A Kafka instance and the ability to create topics and publish on the topic. [**Upstash**](https://upstash.com/) have free tiers and is recommanded for this lab. Alternatively, you also sign up for [**CloudKarafka**](https://www.cloudkarafka.com/) for free. 
-* Access to **Microsoft Teams** and the ability to install an Microsoft Teams incoming webbook connector
+* A CloudAMQ RabbitMQ instance and the ability to create queues and publish on the queue. [**CloudAMQ**](https://www.cloudamqp.com/) have free tiers and is recommended for this lab. Follow this tutorial to create an instance and get access [**RabbitMQ tutorial**](assets/rabbitmq-instructions.md)
+* Access to **Microsoft Teams** and the ability to install an Microsoft Teams incoming Webhook connector
   > If you don't use Teams or don't have the webhook capability, you can use a test webhook online app like [Webhook.site](https://webhook.site) instead for this lab.
 
 ## Lab 1
 
-In this lab, we'll create the first flow that will poll Zoho Invoice for updated invoices and publish each as a Kafka message.
+In this lab, we'll create the first flow that will poll Zoho Invoice for updated invoices and publish each as a RabbitMQ message.
 
 * Create an integration (e.g. InvoiceHandler)
 * Click on the Event button and select the Scheduler Component and configure for 60 seconds
@@ -73,43 +73,45 @@ In this lab, we'll create the first flow that will poll Zoho Invoice for updated
   * Drag a line from `LastRunDt-formatted` on the left to `last_modified_time` and click on Save
 
   ![openapi client component](images/lab1-openapi-client-component.png)
-* Now let's loop over the modified invoices and publish each to Kafka
+* Now let's loop over the modified invoices and publish each to RabbitMQ
 * Add a For-each component, expand it and click on Config and select `GetInvoicesOutput->response->invoices` to specify the array to loop over
   ![foreach configuration](images/lab1-foreach-configuration.png)
-* Inside the For-each add an Apache Kafka Publish Component and expand the bottom panel
-* Click on Add next to Connection to create a new Kafka Connection and give it a name and description
-* Review your Upstash Kafka Details and get your Endpoint, Username and Password
-  ![Upstash Kafka details](images/lab1-upstash-kafka-details.png)
+* Inside the For-each add an RabbitMQ Publish Component and expand the bottom panel
+* Click on Add next to Connection to create a new RabbitMQ Connection and give it a name and description
+* Review your RabbitMQ details and get your **Cluster** host, **User & Vhost**, **Password** and **port**
+  ![rabbitmq details](images/lab1-cloud-rabbitmq-details.jpg)
 * In the Amplify Integration Connection screen
-  * Enter the Upstash Endpoint for Bootstrap Servers
-  * Select "SASL SCRAM with SSL" for Authentication.
-  * Enter the Upstash username and password
-  * Select for SCRAM_SHA_256 Encryption Type
+  * Enter the protocol (here, AMQP)
+  * Enter CloudAMQ host and port
+  * Enter CloudAMQ Virtual Host
+  * Select Basic for Client Authentication
+  * Enter CloudAMQ username and password
   * Click on save/update and press Test
-  ![kafka connection](images/lab1-kafka-connection.png)
-* Return to the Apache Kafka Publish component in the integration and click refresh in the Connection picker and select our newly created Kafka Connection
-* Expand the `ApacheKafkaPublishInput->messages` to expose the messages parameters and drag a line from the `GetInvoicesOutput->response->invoices` in the left hand panel to `ApacheKafkaPublishInput->messages->value`
-* Right click on `ApacheKafkaPublishInput->topicName` and select SetValue and paste in a Topic name that you should create in your Upstash Kafka instance (e.g. invoice) and press Save
-  ![Upstash Kafka topics](images/lab1-upstash-kafka-topics.png)
-  ![kafka publish component](images/lab1-kafka-publish-component.png)
+  ![rabbitmq connection](images/lab1-cloud-rabbitmq-connection.jpg)
+* Return to the RabbitMQ Publish component in the integration and click refresh in the Connection picker and select our newly created RabbitMQ Connection
+* Expand the `RabbitMQPublishInput->messages` to expose the messages parameters and drag a line from the `GetInvoicesOutput->response->invoices` in the left hand panel to `RabbitMQPublishInput->messages->payload`
+  ![rabbitmq publish component](images/lab1-cloud-rabbitmq-component.jpg)
+* Right click on `RabbitMQPublishInput->exchange` and select SetValue and paste in an exchange name from your CloudAMQ RabbitMQ instance (e.g. amq.topic)
+* Right click on `RabbitMQPublishInput->routingKey` and select SetValue and paste in a routing key  that you should create in your CloudAMQ RabbitMQ instance (e.g. invoicesKey) and press Save
+  ![rabbitmq queue](images/lab1-cloud-rabbitmq-queue.jpg)
 * This is what your final integration should look like:
-  ![integration](images/lab1-integration.png)
+  ![integration](images/lab1-integration-rabbitmq.jpg)
 * Let's test it by adding an invoice to Zoho Invoice and then pressing the Test button in your integration (no need to enable the integration)
 * A new browser tab will open showing the transaction. You should see that one invoice was detected by looking at the For-each step
-  ![transaction monitoring](images/lab1-transaction-monitoring.png)
-* Click the `+` sign next to For-each and again and see the Apache Publish step and click on it and expand both sides to see that your invoice was published
-  ![transaction monitoring details](images/lab1-transaction-monitoring-details.png)
+  ![transaction monitoring](images/lab1-transaction-monitoring.jpg)
+* Click the `+` sign next to For-each and again and see the RabbitMQ Publish step and click on it and expand both sides to see that your invoice was published
+  ![transaction monitoring details](images/lab1-transaction-monitoring-details.jpg)
 
-Now that we can publish an updated invoice to Kafka, let's create a Kafka Consumer integration to consume the Kafka message and send a notification to Microsoft Teams
+Now that we can publish an updated invoice to RabbitMQ queue, let's create a RabbitMQ Consumer integration to consume the RabbitMQ message and send a notification to Microsoft Teams
 
 ## Lab 2
 
-In this lab, we'll consume a Kafka message from the `invoice` topic and send a notification with some invoice details to Microsoft Teams.
+In this lab, we'll consume a RabbitMQ message from the `invoices` queue and send a notification with some invoice details to Microsoft Teams.
 
 * Create an integration (e.g. InvoiceNotifier)
-* Click on the Event button and select the Apache Kafka Consume Component and select the Kafka connector used in the first integration and enter the topic name (e.g. invoice) and press save
-  ![kafka consume component](images/lab2-kafka-consume-component.png)
-* Add a Map component to parse the Kafka message and expand the bottom panel
+* Click on the Event button and select the RabbitMQ Consume Component and select the RabbitMQ connector used in the first integration and enter the queue name (e.g. invoices) and press save
+  ![rabbitmq consume component](images/lab2-rabbitmq-consume-component.jpg)
+* Add a Map component to parse the RabbitMQ message and expand the bottom panel
 * Right click on any variable on the right hand side and select Extract and paste in the following invoice payload sample and click Copy Node
 
   ```json
@@ -190,35 +192,61 @@ In this lab, we'll consume a Kafka message from the `invoice` topic and send a n
   ```
 
 * Right click on any variable on the right hand side and select Paste and give your extract variable a name (e.g. invoiceJson)
-* Expand the `ApacheKafkaConsumeOutput` variable on the left panel to expose the `recordValue` and drag a line from it to the `invoiceJson` variable
-  ![map](images/lab2-map.png)
+* Expand the `RabbitMQConsumeOutput` variable on the left panel to expose the `message -> payload` and drag a line from it to the `invoiceJson` variable
+  ![map](images/lab2-map.jpg)
 
 In the next few steps, we'll post a message to MS Teams with some details from the invoice.
 
 We'll use the MS Teams Incoming Webhook Connector so that we can Post a message to a MS Teams channel using an HTTP/S Client Post component.
 
-* Follow the instructions [**here**](https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook) to get a URL to a MS Teams channel
+* Follow the instructions [**here**](https://support.microsoft.com/en-us/office/create-incoming-webhooks-with-workflows-for-microsoft-teams-8ae491c7-0394-4861-ba59-055e33f75498) to get a URL to a MS Teams channel
 * Add an HTTP/S Client Post Connection component to your integration and expand the bottom panel
 * Click Add next to Connection so we can create an HTTP/S Client Connection to the MS Teams Incoming Webhook Connector URL and give the connection a name and description and do the following:
   * Select HTTPS for Protocol
   * Select HTTP/2 for HTTP Version
   * Enter the MS Teams Incoming Webhook Connector URL (without the https://) and press Update
-  ![Microsoft Teams https client connection](images/lab2-microsoft-teams-https-client-connection.png)
+  ![Microsoft Teams https client connection](images/lab2-microsoft-teams-https-client-connection.jpg)
 * Return the HTTP/S Client Post Connection component in your integration, click refresh and select the MS Teams Connection
-  ![https client post component](images/lab2-https-client-post-component.png)
+  ![https client post component](images/lab2-https-client-post-component.jpg)
 * In the ACTION PROPERTIES section, expand `HTTPSPostInput` to expose the `body` and right click on `body` and select SetValue
 * Enter the following:
 
   ```json
   {
-    "Text": "Invoice #{invoice_number} for customer '{company_name}', total value: {currency_symbol}{total} {currency_code} is now {status}"
+    "type": "message",
+    "attachments": [
+        {
+            "contentType": "application/vnd.microsoft.card.adaptive",
+            "content": {
+                "type": "AdaptiveCard",
+                "body": [
+                    {
+                        "type": "TextBlock",
+                        "text": "Invoice #{invoice_number} for customer '{company_name}', total value: {currency_symbol}{total} {currency_code} is now {status}"
+                    }
+                ],
+                "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+                "version": "1.0",
+                "msteams": {
+                    "entities": []
+                }
+            }
+        }
+    ]
   }
   ```
 
 * Replace the variables (e.g. {...}) by deleting them and clicking the `+` button and selecting the appropriate variable from there and click Save and then Save again
-  ![https client post set value](images/lab2-https-client-post-set-value.png)
+  ![https client post set value](images/lab2-https-client-post-set-value.jpg)
+
+* in headers, add two new strings attributes : 
+  * Accept=application/json
+  * Content-Type=application/json
+    ![https client post header 1](images/lab2-https-client-post-component-header1.jpg)
+    ![https client post header 1](images/lab2-https-client-post-component-header2.jpg)
+
 * Now we're ready to test our integration which should look like this:
-  ![integration](images/lab2-integration.png)
+  ![integration](images/lab2-integration-rabbitmq.jpg)
 * Enable your integration and you should see a message in MS Teams. This is the message we published at the end of the previous lab
   ![teams message](images/lab2-teams-message.png)
 * Make sure the other integration is enabled and modify an invoice or create a new invoice in Zoho Invoice and see that you get a new message in MS Teams once the scheduler is triggered. For updating a invoice you can mark an invoice as sent and/or record a payment to change its status
@@ -226,41 +254,5 @@ We'll use the MS Teams Incoming Webhook Connector so that we can Post a message 
 
 ## Lab 3 - Challenge yourself!
 
-Use the following MS Teams card sample and modify it to make a nicer MS Teams card for your invoice and send it as the body of your HTTPS Client Post to MS Teams:
-
+Review adaptive card samples [here](https://adaptivecards.io/samples/) and try to make you card look nicer like this:
   ![teams message](images/lab3-teams-message.png)
-
-  ```json
-  {
-    "@type": "MessageCard",
-    "@context": "http://schema.org/extensions",
-    "themeColor": "0076D7",
-    "summary": "Summary",
-    "sections": [
-      {
-        "activityTitle": "Title",
-        "activitySubtitle": "Subtitle",
-        "activityImage": "https://adaptivecards.io/content/atbot-logo.png",
-        "facts": [
-          {
-            "name": "Description",
-            "value": "This is a **sample *message* card**"
-          },
-          {
-            "name": "Value",
-            "value": 29672
-          },
-          {
-            "name": "Date",
-            "value": "March 4, 2024"
-          },
-          {
-            "name": "URL",
-            "value": "[More samples](https://adaptivecards.io/samples)"
-          }
-        ],
-        "markdown": true
-      }
-    ]
-  }
-  ```
